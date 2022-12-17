@@ -1,0 +1,13 @@
+const app = require('../app.js')
+const port = process.env.PORT || 3000
+const { mongoConnect } = require('../config/connection')
+
+mongoConnect()
+  .then(() => {
+    app.listen(port, () => {
+      console.log(`Run app on port ${port}`)
+    })
+  })
+  .catch( error => {
+    console.log(error)
+  })
