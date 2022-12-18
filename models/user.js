@@ -9,9 +9,18 @@ class User{
     return usersCollection
   }
 
+  static validate(data){
+    const result = []
+    if(!data.username) result.push("username_is_required")
+    return result
+  }
+
   static async create(data){
     const userCollection = this.users();
     data.password = hashedPassword(data.password)
+    if(this.validate(data).length > 0){
+      throw { name: this.validate(data)[0] }
+    }
     return await userCollection.insertOne(data)
   }
 
