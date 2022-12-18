@@ -37,6 +37,21 @@ class User{
     return user
   }
 
+  static async updateById(id, data){
+    const userCollection = this.users()
+    const filter = {_id : ObjectId(id)}
+    const options = { upsert: true }
+    const user = await userCollection.findOne({_id : ObjectId(id)})
+
+    if(data.email) user.email = data.email
+    if(data.username) user.username = data.username
+    if(data.password) user.password = hashedPassword(data.password)
+    if(data.role) user.role = data.role
+
+    const result = await userCollection.updateOne(filter, { $set: user }, options);
+    return result
+  }
+
   static async destroy(id){
     const userCollection = this.users();
     return await userCollection.deleteOne({_id : ObjectId(id)})
