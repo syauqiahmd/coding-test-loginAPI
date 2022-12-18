@@ -6,7 +6,10 @@ router.get('/test', (req, res)=>{
   res.status(200).json({message: "OK"})
 })
 
+router.post('/login', UserController.login)
+
 router.get('/users', UserController.findAll)
 router.post('/users', UserController.create)
+router.delete('/users/:id', UserController.destroy)
 
 module.exports = router

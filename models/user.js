@@ -23,6 +23,25 @@ class User{
     })
     return users
   }
+
+  static async findBy(object){
+    const userCollection = this.users();
+    const user = await userCollection.findOne(object)
+    return user
+  }
+
+  static async findByPK(id){
+    const userCollection = this.users();
+    const user = await userCollection.findOne({_id : ObjectId(id)})
+    delete user.password
+    return user
+  }
+
+  static async destroy(id){
+    const userCollection = this.users();
+    return await userCollection.deleteOne({_id : ObjectId(id)})
+  }
+
 }
 
 module.exports = User

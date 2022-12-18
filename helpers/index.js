@@ -7,7 +7,7 @@ const hashedPassword = (password) => {
   return bcrypt.hashSync(password, SALT)
 }
 
-const comparePassword = (password, hashedPassword) => {
+const isValidPassword = (password, hashedPassword) => {
   return bcrypt.compareSync(password, hashedPassword)
 }
 
@@ -15,13 +15,13 @@ const signedToken = (payload) => {
   return jwt.sign(payload, SECRET)
 }
 
-const verifyToken = (token) => {
+const isValidToken = (token) => {
   return jwt.verify(token, SECRET)
 }
 
 module.exports = {
   hashedPassword,
-  comparePassword,
+  isValidPassword,
   signedToken,
-  verifyToken
+  isValidToken
 }
