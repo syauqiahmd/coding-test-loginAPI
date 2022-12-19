@@ -8,6 +8,7 @@ class UserController {
     try {
       const { username, email, password, role } = req.body
       const user = await User.create({ username, email, password, role })
+      await redis.del("app:users");
       res.status(201).json(user)
     } catch (error) {
       next(error)
@@ -16,8 +17,13 @@ class UserController {
 
   static async findAll(req, res, next){
     try {
-      const user = await User.findAll()
-      res.status(200).json(user)
+      const cacheUsers = await redis.get("app:users")
+      if(cacheUsers) {
+        return res.status(201).json(JSON.parse(cacheUsers))
+      }
+      const users = await User.findAll()
+      await redis.setex("app:users", 21600000, JSON.stringify(users))
+      res.status(200).json(users)
     } catch (error) {
       next(error)
     }
@@ -51,6 +57,7 @@ class UserController {
       if(req.body.role) newObj.role = req.body.role
 
       await User.updateById(id, newObj)
+      await redis.del("app:users");
       res.status(200).json({message: "update success"})
     } catch (error) {
       next(error)
@@ -65,6 +72,7 @@ class UserController {
         throw { name: "data_not_found" }
       }
       const user = await User.destroy(isUser._id)
+      await redis.del("app:users");
       res.status(200).json({message: "deleted success"})
     } catch (error) {
       next(error)
