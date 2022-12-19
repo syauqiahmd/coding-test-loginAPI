@@ -1,8 +1,11 @@
 const errorHandler = (error, req, res, next) => {
   let code = 500
   let message = "internal server error"
-  console.log(error)
 
+  if(error.name === "username_is_required"){
+    code = 401
+    message = "username is required"
+  } 
   if(error.name === "data_not_found"){
     code = 404
     message = "data not found"
@@ -25,6 +28,11 @@ const errorHandler = (error, req, res, next) => {
     message = "invalid email or password"
   }
 
+  if(error.name === 'validation_error'){
+    code = 401
+    message = error.message
+  }
+  
   if(error.name === "invalid_token" ||error.name === "JsonWebTokenError"){
     code = 401
     message = "Invalid Token"
