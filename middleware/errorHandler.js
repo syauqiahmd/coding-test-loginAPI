@@ -25,6 +25,16 @@ const errorHandler = (error, req, res, next) => {
     message = "invalid email or password"
   }
 
+  if(error.name === "invalid_token" ||error.name === "JsonWebTokenError"){
+    code = 401
+    message = "Invalid Token"
+  } 
+
+  if(error.name === "forbidden"){
+    code = 403
+    message = "you are not authorize"
+  } 
+
   res.status(code).json({message})
 }
 
