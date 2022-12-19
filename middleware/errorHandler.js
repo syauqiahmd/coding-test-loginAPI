@@ -1,7 +1,6 @@
 const errorHandler = (error, req, res, next) => {
   let code = 500
   let message = "internal server error"
-  // console.log(error)
 
   if(error.name === "username_is_required"){
     code = 401
@@ -27,6 +26,11 @@ const errorHandler = (error, req, res, next) => {
   if(error.name === 'invalid_login'){
     code = 401
     message = "invalid email or password"
+  }
+
+  if(error.name === 'validation_error'){
+    code = 401
+    message = error.message
   }
 
   res.status(code).json({message})
