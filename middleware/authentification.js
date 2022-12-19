@@ -1,4 +1,5 @@
-const { isValidToken } = require('../helpers')
+const redis = require('../config/redis')
+const { decodeToken } = require('../helpers')
 const User = require('../models/user')
 
 const authentication = async (req, res, next)=>{
@@ -7,7 +8,14 @@ const authentication = async (req, res, next)=>{
     if(!access_token){
       throw { name : "invalid_token" }
     }
-    const payload = isValidToken(access_token)
+    const payload = decodeToken(access_token)
+    const cacheToken = await redis.get(`user_token:${access_token}`)
+    if (!cacheToken) {
+      throw { name: "invalid_token" };
+    }
+    if (JSON.parse(cacheToken) !== access_token) {
+      throw { name: "invalid_token" };
+    }
     const user = await User.findByPK(payload.id)
     if (!user) {
       throw { name: "invalid_token" };

@@ -1,4 +1,5 @@
 const { ObjectId } = require('mongodb')
+const redis = require('../config/redis')
 const { signedToken, isValidPassword, hashedPassword } = require('../helpers')
 const User = require('../models/user')
 
@@ -7,6 +8,7 @@ class UserController {
     try {
       const { username, email, password, role } = req.body
       const user = await User.create({ username, email, password, role })
+      await redis.del("app:users");
       res.status(201).json(user)
     } catch (error) {
       next(error)
@@ -15,8 +17,13 @@ class UserController {
 
   static async findAll(req, res, next){
     try {
-      const user = await User.findAll()
-      res.status(200).json(user)
+      const cacheUsers = await redis.get("app:users")
+      if(cacheUsers) {
+        return res.status(201).json(JSON.parse(cacheUsers))
+      }
+      const users = await User.findAll()
+      await redis.setex("app:users", 21600000, JSON.stringify(users))
+      res.status(200).json(users)
     } catch (error) {
       next(error)
     }
@@ -43,13 +50,14 @@ class UserController {
       if(!data){
         throw { name: "data_not_found" }
       }
- 
+
       if(req.body.username) newObj.username = req.body.username
       if(req.body.email) newObj.email = req.body.email
       if(req.body.password) newObj.password = hashedPassword(req.body.password)
       if(req.body.role) newObj.role = req.body.role
 
       await User.updateById(id, newObj)
+      await redis.del("app:users");
       res.status(200).json({message: "update success"})
     } catch (error) {
       next(error)
@@ -64,6 +72,7 @@ class UserController {
         throw { name: "data_not_found" }
       }
       const user = await User.destroy(isUser._id)
+      await redis.del("app:users");
       res.status(200).json({message: "deleted success"})
     } catch (error) {
       next(error)
@@ -81,6 +90,7 @@ class UserController {
         throw { name: "invalid_login" }
       }
       const access_token = signedToken({id : user._id})
+      await redis.setex(`user_token:${access_token}`, 7200000, JSON.stringify(access_token))
       res.status(200).json({access_token})
     } catch (error) {
       next(error)

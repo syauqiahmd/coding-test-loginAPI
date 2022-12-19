@@ -15,7 +15,7 @@ const signedToken = (payload) => {
   return jwt.sign(payload, SECRET)
 }
 
-const isValidToken = (token) => {
+const decodeToken = (token) => {
   return jwt.verify(token, SECRET)
 }
 
@@ -23,5 +23,5 @@ module.exports = {
   hashedPassword,
   isValidPassword,
   signedToken,
-  isValidToken
+  decodeToken
 }
