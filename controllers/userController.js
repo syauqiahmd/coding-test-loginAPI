@@ -1,4 +1,5 @@
 const { ObjectId } = require('mongodb')
+const redis = require('../config/redis')
 const { signedToken, isValidPassword, hashedPassword } = require('../helpers')
 const User = require('../models/user')
 
@@ -43,7 +44,7 @@ class UserController {
       if(!data){
         throw { name: "data_not_found" }
       }
- 
+
       if(req.body.username) newObj.username = req.body.username
       if(req.body.email) newObj.email = req.body.email
       if(req.body.password) newObj.password = hashedPassword(req.body.password)
@@ -81,6 +82,7 @@ class UserController {
         throw { name: "invalid_login" }
       }
       const access_token = signedToken({id : user._id})
+      await redis.setex(`user_token:${access_token}`, 7200000, JSON.stringify(access_token))
       res.status(200).json({access_token})
     } catch (error) {
       next(error)
