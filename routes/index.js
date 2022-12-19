@@ -1,4 +1,6 @@
 const UserController = require('../controllers/userController')
+const authentication = require('../middleware/authentification')
+const authorization = require('../middleware/authorization')
 
 const router = require('express').Router()
 
@@ -8,7 +10,10 @@ router.get('/test', (req, res)=>{
 
 router.post('/login', UserController.login)
 
+router.use(authentication)
 router.get('/users', UserController.findAll)
+
+router.use(authorization)
 router.post('/users', UserController.create)
 router.get('/users/:id', UserController.find)
 router.put('/users/:id', UserController.update)
