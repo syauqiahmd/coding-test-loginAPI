@@ -24,7 +24,9 @@ file : `./postman-docs.json`
 
 ## Flow or Diagram
 
-example
+<p align="center" width="100%">
+    <img width="33%" src="https://raw.githubusercontent.com/syauqiahmd/coding-test-loginAPI/main/illustration.png"> 
+</p>
 
 
 ## Endpoints :
