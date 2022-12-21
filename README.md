@@ -4,7 +4,8 @@
 URL: `coding-test-loginapi-production.up.railway.app`
 
 ## Postman Documentation
-file : `./postman-docs.json`
+file  : `./postman-docs.json`
+url.  : `https://documenter.getpostman.com/view/23904423/2s8Z6sbbFt`
 
 ## Credential
 
